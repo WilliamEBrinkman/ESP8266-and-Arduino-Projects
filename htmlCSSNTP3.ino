@@ -42,8 +42,8 @@
 #include <NewPing.h>       //http://playground.arduino.cc/Code/NewPing
 
 // router settings
-const char* ssid = "sosume1";                 // router network
-const char* password = "9B16FDB00F";          // router password
+const char* ssid = "XXXXXXXXX";                 // router network
+const char* password = "YYYYYYYYYY";          // router password
 
 IPAddress ip(192, 168, 0, 100);               // ip address to call up the wemos 
 IPAddress gateway(192, 168, 0, 1);            // router address 
