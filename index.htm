@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+    <head>
+	    <meta charset="utf-8"/> 
+        <title>Garage Door with Ajax I/O</title>
+        <script>
+		strLED1 = "";
+		var isOn = false;
+		function GetHuzzahIO()
+		{
+			ProcessXML();
+			setTimeout("GetHuzzahIO()", 2000);   // setting the function in quotes means it fires AFTER the timeout, not BEFORE
+		}
+		function ProcessXML(){
+			nocache = "&nocache=" + Math.random() * 1000000;
+			var request = new XMLHttpRequest();
+			request.onreadystatechange = function()
+			{
+				if (this.readyState == 4 && this.status == 200)
+				{
+						
+							// XML file received - contains analog values, switch values and LED states
+							var count;
+							// local time
+							var num_an = this.responseXML.getElementsByTagName("time_loc").length;
+							for (count = 0; count < num_an; count++) {
+								document.getElementsByClassName("time_loc")[count].innerHTML =
+									this.responseXML.getElementsByTagName("time_loc")[count].childNodes[0].nodeValue;
+							}
+							// alarm time
+							 num_an = this.responseXML.getElementsByTagName("time_ala").length;
+							for (count = 0; count < num_an; count++) {
+								document.getElementsByClassName("time_ala")[count].innerHTML =
+									this.responseXML.getElementsByTagName("time_ala")[count].childNodes[0].nodeValue;
+							}
+							// sonar ping distance
+							 num_an = this.responseXML.getElementsByTagName("ping").length;
+							for (count = 0; count < num_an; count++) {
+								document.getElementsByClassName("ping")[count].innerHTML =
+									this.responseXML.getElementsByTagName("ping")[count].childNodes[0].nodeValue;
+							}
+							// door status
+							 num_an = this.responseXML.getElementsByTagName("door").length;
+							for (count = 0; count < num_an; count++) {
+								document.getElementsByClassName("door")[count].innerHTML =
+									this.responseXML.getElementsByTagName("door")[count].childNodes[0].nodeValue;
+							}
+							
+						    // Car status
+						     num_an = this.responseXML.getElementsByTagName("car").length;
+					 		for (count = 0; count < num_an; count++) {
+								document.getElementsByClassName("car")[count].innerHTML =
+									this.responseXML.getElementsByTagName("car")[count].childNodes[0].nodeValue;
+							}
+														
+							// LED 1
+							if (this.responseXML.getElementsByTagName("LED")[0].childNodes[0].nodeValue === "on") {
+								document.LED_form.LED1.checked = true;
+								//document.getElementById("btnSoftLED").innerHTML = "LED (pin2) is ON";
+								//var img = document.getElementById("ledImgBlue");
+								//img.style.display = 'block';
+								//var img2 = document.getElementById("ledImgWhite");
+								//img2.style.display = 'none';
+							}
+							else {
+								document.LED_form.LED1.checked = false;
+								//document.getElementById("btnSoftLED").innerHTML = "LED (pin2) is OFF";
+								//var img = document.getElementById("ledImgBlue");
+								//img.style.display = 'none';
+								//var img2 = document.getElementById("ledImgWhite");
+								//img2.style.display= 'block';
+							}
+				}
+			}
+			// send HTTP GET request with LEDs to switch on/off if any
+			request.open("GET", "ajax_inputs" + strLED1 + nocache, true);
+			request.send(null);
+			strLED1 = "";
+		}
+		// service LEDs when checkbox checked/unchecked
+		function GetCheck()
+		{
+			if (LED_form.LED1.checked) {
+				strLED1 = "&LED1=1";
+				isOn = true;
+			}
+			else {
+				strLED1 = "&LED1=0";
+				isOn = false;
+			}
+		}
+		</script>
+	<style>
+		.IO_box {
+			float: left;
+			margin: 0 20px 20px 0;
+			border: 1px solid blue;
+			padding: 0 5px 0 5px;
+			width: 150px;
+		}
+		h1 {
+			font-size: 120%;
+			color: blue;
+			margin: 0 0 10px 0;
+		}
+		h2 {
+			font-size: 85%;
+			color: #5734E6;
+			margin: 5px 0 5px 0;
+		}
+		p, form, button {
+			font-size: 80%;
+			color: #252525;
+		}
+		img{
+			margin-left: 50px;
+			float: left;
+		}
+		.small_text {
+			font-size: 70%;
+			color: #737373;
+			float: left;
+		}
+	</style>
+    </head>
+    <body onload="GetHuzzahIO()">
+        <h1>Garage Door Opener with Ajax I/O</h1>
+		
+		<div class="IO_box">
+			<h2>Time</h2>
+			<p>Time: <span class="time_loc">...</span> : <span class="time_loc">...</span> : <span class="time_loc">...</span></p>
+			<p>Alarm: <span class="time_ala">...</span> : <span class="time_ala">...</span> : <span class="time_ala">...</span></p>
+			<p>Est Dist: <span class="ping">...</span> inches </p>
+			<p>Door is: <span class="door">...</span></p>
+			<p>Car is: <span class="car">...</span></p>
+		</div>
+		
+        
+		<div class="IO_box">
+			<h2>Toggle Door UP or Down Using Checkbox</h2>
+			<form id="check_LEDs" name="LED_form">
+				<input type="checkbox" name="LED1" value="0" onclick="GetCheck()" />Relay (pin14 D5)<br /><br />
+			</form>
+		</div>
+	</body>
+</html>
