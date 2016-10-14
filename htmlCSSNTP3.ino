@@ -636,10 +636,12 @@ void ALARMr1()
 {
   Serial.println("Alarm: - Pulse the relay");   
 
+ if(door_status == 1) { // status 0=down, 1=up
  digitalWrite(LED_PIN,0);  //  0 sets the relay low - turns ON
- delay(250);
+ delay(350);
  digitalWrite(LED_PIN,1);
  delay(1000);
+ }  
  Serial.println("Alarm: - out of function alarmr1");  
     
 }  // end ALARMr1
